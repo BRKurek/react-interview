@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import noop from "lodash/noop";
 import NewDealFormInput from "./NewDealFormInput/NewDealFormInput";
-import { DealType, DealFormDirtyType } from "../../types";
+import { DealType, DealFormDirtyType, DealActionType } from "../../types";
 import "./NewDealForm.scss";
 import { isNonEmptyString } from "../../tools/utils";
 
@@ -19,7 +19,7 @@ const DEFAULT_DIRTY_STATES: DealFormDirtyType = {
 };
 
 type DealFormProps = {
-  onCreateDeal: (deal: DealType) => any;
+  onCreateDeal: DealActionType;
 };
 
 const DealForm = (props: DealFormProps) => {
@@ -33,6 +33,7 @@ const DealForm = (props: DealFormProps) => {
       dealSize,
     } = deal;
 
+    // TODO: properly validate dealSize
     return isNonEmptyString(institution) && isNonEmptyString(dealType) && isNonEmptyString(dealSize);
   }, [])
 
@@ -60,8 +61,6 @@ const DealForm = (props: DealFormProps) => {
       const newDealClone = { ...newDeal };
 
       newDealClone.dealSize = newDealClone.dealSize.replace(/[$,]/g, '');
-      console.log(newDeal, newDealClone);
-
       onCreateDeal(newDealClone);
 
       // Reset state for the next deal input.
@@ -106,7 +105,11 @@ const DealForm = (props: DealFormProps) => {
           required
         />
       </div>
-      <button className='NewDealForm--button' onClick={handleCreateDeal}>
+      <button 
+        className='NewDealForm--button'
+        disabled={!dealFormValid(newDeal)}
+        onClick={handleCreateDeal}
+      >
         Create Deal
       </button>
     </form>

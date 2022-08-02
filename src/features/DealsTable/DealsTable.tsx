@@ -1,14 +1,18 @@
 import React from "react";
-import { DealsListType } from "../../types";
+import { DealActionType, DealType } from "../../types";
 import DealsTableRow from "./DealsTableRow/DealsTableRow";
 import "./DealsTable.scss";
 
-type DealsTableProps = DealsListType;
+type DealsTableProps = {
+  deals: DealType[];
+  onDeleteDeal: DealActionType;
+  onPublishDeal: DealActionType;
+};
 
 const DealsTable = (props: DealsTableProps) => {
-  const { deals } = props;
+  const { deals, onDeleteDeal, onPublishDeal } = props;
   const dealsTableRows = deals.map((deal) => (
-    <DealsTableRow key={deal.id} deal={deal} />
+    <DealsTableRow key={deal.id} deal={deal} onDelete={onDeleteDeal} onPublish={onPublishDeal} />
   ));
   return (
     <div className="tile">
@@ -20,6 +24,8 @@ const DealsTable = (props: DealsTableProps) => {
             <th className='DealsTable--headerCell'>Deal Type</th>
             <th className='DealsTable--headerCell'>Deal Size</th>
             <th className='DealsTable--headerCell'>Is Published?</th>
+            <th className='DealsTable--headerCell'></th>
+            <th className='DealsTable--headerCell'></th>
           </tr>
         </thead>
         <tbody>{dealsTableRows}</tbody>

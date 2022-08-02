@@ -1,5 +1,5 @@
-import React from "react";
-import { DealType } from "../../../types";
+import React, { useCallback } from "react";
+import { DealActionType, DealType } from "../../../types";
 
 import "./DealsTableRow.scss";
 
@@ -9,12 +9,27 @@ const currencyAmountToString = (amount: string) => {
 
 type DealsTableRowProps = {
   deal: DealType;
+  onDelete: DealActionType;
+  onPublish: DealActionType;
 };
 
 const DealsTableRow = (props: DealsTableRowProps) => {
   const {
-    deal: { institution, dealType, dealSize, isPublished },
+    deal,
+    onDelete,
+    onPublish,
   } = props;
+
+  const memOnDelete = useCallback(() => onDelete(deal), [deal, onDelete]);
+  const memOnPublish = useCallback(() => onPublish(deal), [deal, onPublish]);
+
+  const {
+    institution,
+    dealType,
+    dealSize,
+    isPublished,
+  } = deal;
+
   return (
     <tr className='DealsTableRow'>
       <td className='DealsTableRow--cell'>{institution}</td>
@@ -23,6 +38,12 @@ const DealsTableRow = (props: DealsTableRowProps) => {
         {currencyAmountToString(dealSize)}
       </td>
       <td className='DealsTableRow--cell'>{isPublished ? "Yes" : "No"}</td>
+      <td className='DealsTableRow--cell'>
+        <button onClick={memOnPublish}>{isPublished ? "Un-Publish" : "Publish"}</button>
+      </td>
+      <td className='DealsTableRow--cell'>
+        <button className="DealsTableRow--delete-button" onClick={memOnDelete}>Delete</button>
+      </td>
     </tr>
   );
 };

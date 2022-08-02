@@ -1,5 +1,6 @@
-import { CREATE_DEAL } from "./actions";
+import { CREATE_DEAL, DELETE_DEAL, PUBLISH_DEAL } from "./actions";
 import { DealType, DealsListType } from "../types";
+import { cloneDeep } from "lodash";
 
 let nextDealId = 3;
 
@@ -34,6 +35,22 @@ export default (state = initialState, action: ActionType) => {
         ...state,
         deals: [...state.deals, { ...action.payload.deal, id: nextDealId++ }],
       };
+    case DELETE_DEAL:
+      const { id: idToDelete } = action.payload.deal;
+      return {
+        ...state,
+        deals: state.deals.filter(({ id }) => id !== idToDelete),
+      };
+    case PUBLISH_DEAL:
+      const { id: idToPublish } = action.payload.deal;
+      const stateClone = cloneDeep(state);
+      const dealToPublish = stateClone.deals.find(({ id }) => id === idToPublish);
+
+      if (dealToPublish) {
+        dealToPublish.isPublished = !dealToPublish.isPublished;
+      }
+
+      return stateClone;
     default:
       return state;
   }

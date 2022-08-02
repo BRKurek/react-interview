@@ -50,4 +50,12 @@
       border-right: 0px;
     }
   }
+
+  &--delete-button {
+    background-color: $RoseLight3;
+
+    &:hover {
+      background-color: $Rose;
+    }
+  }
 }

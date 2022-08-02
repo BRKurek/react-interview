@@ -15,3 +15,10 @@ export type DealFormDirtyType = {
     dealSize: boolean;
     dealType: boolean;
 }
+
+export type DealActionType = (deal: DealType) => any
+
+export type DispatchType = (arg0: {
+    type: string;
+    payload: { deal: DealType };
+}) => any

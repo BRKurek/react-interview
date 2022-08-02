@@ -1,3 +1,5 @@
+import { SortIconDirection } from "./assets/SortIcon";
+
 export type DealType = {
     id?: number;
     institution: string;
@@ -14,6 +16,14 @@ export type DealFormDirtyType = {
     institution: boolean;
     dealSize: boolean;
     dealType: boolean;
+}
+
+export type DealTableSortDirectionsType = {
+    institution?: SortIconDirection;
+    dealSize?: SortIconDirection;
+    dealType?: SortIconDirection;
+    isPublished?: SortIconDirection;
+    [key: string]: SortIconDirection | undefined;
 }
 
 export type DealActionType = (deal: DealType) => any

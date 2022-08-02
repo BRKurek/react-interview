@@ -1,6 +1,8 @@
-import React from "react";
-import { DealActionType, DealType } from "../../types";
+import React, { useState } from "react";
+import { DealActionType, DealTableSortDirectionsType, DealType } from "../../types";
+import DealsTableHeader from "./DealsTableHeader/DealsTableHeader";
 import DealsTableRow from "./DealsTableRow/DealsTableRow";
+import { SortIconDirection } from "../../assets/SortIcon";
 import "./DealsTable.scss";
 
 type DealsTableProps = {
@@ -9,8 +11,31 @@ type DealsTableProps = {
   onPublishDeal: DealActionType;
 };
 
+const DEFAULT_SORT_DIRECTIONS: DealTableSortDirectionsType = {
+  institution: SortIconDirection.UP,
+};
+
 const DealsTable = (props: DealsTableProps) => {
   const { deals, onDeleteDeal, onPublishDeal } = props;
+  const [sortDirections, setSortDirections] = useState(DEFAULT_SORT_DIRECTIONS);
+
+  
+  const handleSortClick = (property: string) => () => {
+    setSortDirections(prevSortDirections => {
+      const prevSort = prevSortDirections[property];
+      let newSort: SortIconDirection;
+
+      if (!prevSort) {
+        newSort = SortIconDirection.UP
+      } else {
+        newSort = prevSort === SortIconDirection.UP ? SortIconDirection.DOWN : SortIconDirection.UP;
+      }
+
+      return { [property]: newSort };
+    })
+  };
+
+
   const dealsTableRows = deals.map((deal) => (
     <DealsTableRow key={deal.id} deal={deal} onDelete={onDeleteDeal} onPublish={onPublishDeal} />
   ));
@@ -20,12 +45,28 @@ const DealsTable = (props: DealsTableProps) => {
       <table className='DealsTable'>
         <thead>
           <tr>
-            <th className='DealsTable--headerCell'>Institution</th>
-            <th className='DealsTable--headerCell'>Deal Type</th>
-            <th className='DealsTable--headerCell'>Deal Size</th>
-            <th className='DealsTable--headerCell'>Is Published?</th>
-            <th className='DealsTable--headerCell'></th>
-            <th className='DealsTable--headerCell'></th>
+            <DealsTableHeader
+              header="Institution"
+              onSortClick={handleSortClick("institution")}
+              sortDirection={sortDirections.institution} 
+            />
+            <DealsTableHeader
+              header="Deal Type"
+              onSortClick={handleSortClick("dealType")}
+              sortDirection={sortDirections.dealType} 
+            />
+            <DealsTableHeader
+              header="Deal Size"
+              onSortClick={handleSortClick("dealSize")}
+              sortDirection={sortDirections.dealSize} 
+            />
+            <DealsTableHeader
+              header="Is Published?"
+              onSortClick={handleSortClick("isPublished")}
+              sortDirection={sortDirections.isPublished} 
+            />
+            <DealsTableHeader />
+            <DealsTableHeader />
           </tr>
         </thead>
         <tbody>{dealsTableRows}</tbody>

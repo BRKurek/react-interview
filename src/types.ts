@@ -9,3 +9,9 @@ export type DealType = {
 export type DealsListType = {
     deals: DealType[]
 }
+
+export type DealFormDirtyType = {
+    institution: boolean;
+    dealSize: boolean;
+    dealType: boolean;
+}

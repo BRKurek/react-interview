@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import noop from "lodash/noop";
-import { DealType } from "../../types";
+import NewDealFormInput from "./NewDealFormInput/NewDealFormInput";
+import { DealType, DealFormDirtyType } from "../../types";
 import "./NewDealForm.scss";
+import { isNonEmptyString } from "../../tools/utils";
 
 const DEFAULT_DEAL: DealType = {
   institution: "",
   dealType: "",
   dealSize: "",
   isPublished: false,
+};
+
+const DEFAULT_DIRTY_STATES: DealFormDirtyType = {
+  institution: false,
+  dealType: false,
+  dealSize: false,
 };
 
 type DealFormProps = {
@@ -17,25 +25,59 @@ type DealFormProps = {
 const DealForm = (props: DealFormProps) => {
   const { onCreateDeal = noop } = props;
   const [newDeal, setNewDeal] = useState(DEFAULT_DEAL);
+  const [dirtyStates, setDirtyStates] = useState(DEFAULT_DIRTY_STATES);
+  const dealFormValid = useCallback((deal: DealType) => {
+    const {
+      institution,
+      dealType,
+      dealSize,
+    } = deal;
+
+    return isNonEmptyString(institution) && isNonEmptyString(dealType) && isNonEmptyString(dealSize);
+  }, [])
 
   const handleUpdateProperty = (property: string) => (
     e: React.ChangeEvent<any>
-  ) => setNewDeal({ ...newDeal, [property]: e.target.value });
+  ) => {
+    e.persist();
+
+    setNewDeal(prevDeal => ({
+      ...prevDeal,
+      [property]: e.target.value,
+    }));
+
+
+    setDirtyStates(prevDirtyStates => ({
+      ...prevDirtyStates,
+      [property]: true,
+    }));
+  }
 
   const handleCreateDeal = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    onCreateDeal({ ...newDeal });
-    // Reset state for the next deal input.
-    setNewDeal({ ...DEFAULT_DEAL });
+
+    if (dealFormValid(newDeal)) {
+      const newDealClone = { ...newDeal };
+
+      newDealClone.dealSize = newDealClone.dealSize.replace(/[$,]/g, '');
+      console.log(newDeal, newDealClone);
+
+      onCreateDeal(newDealClone);
+
+      // Reset state for the next deal input.
+      setNewDeal({ ...DEFAULT_DEAL });
+      setDirtyStates({ ...DEFAULT_DIRTY_STATES });
+    }
   };
 
   return (
     <form className='NewDealForm tile'>
       <div className='tile--header'>Add New Deal</div>
       <div className='NewDealForm--div'>
-        <label className='NewDealForm--label'>Institution</label>
-        <input
-          className='NewDealForm--input'
+        <NewDealFormInput
+          dirty={dirtyStates.institution}
+          errorText="Institution not be empty"
+          label="Institution"
           value={newDeal.institution}
           placeholder='LS Credit Union'
           onChange={handleUpdateProperty("institution")}
@@ -43,9 +85,10 @@ const DealForm = (props: DealFormProps) => {
         />
       </div>
       <div className='NewDealForm--div'>
-        <label className='NewDealForm--label'>Deal Type</label>
-        <input
-          className='NewDealForm--input'
+        <NewDealFormInput
+          dirty={dirtyStates.dealType}
+          errorText="Deal Type must not be empty"
+          label="Deal Type"
           value={newDeal.dealType}
           placeholder='Consumer Auto'
           onChange={handleUpdateProperty("dealType")}
@@ -53,9 +96,10 @@ const DealForm = (props: DealFormProps) => {
         />
       </div>
       <div className='NewDealForm--div'>
-        <label className='NewDealForm--label'>Deal Size</label>
-        <input
-          className='NewDealForm--input'
+        <NewDealFormInput
+          dirty={dirtyStates.dealSize}
+          errorText="Deal Size must be a valid monetary value (ex: $1,000,000)"
+          label="Deal Size"
           value={newDeal.dealSize}
           placeholder='$1,000,000'
           onChange={handleUpdateProperty("dealSize")}

@@ -1,0 +1,28 @@
+@import "../../../theme.scss";
+
+.NewDealFormInput {
+  .NewDealFormInputLabel {
+    font-size: $BodySmall;
+    padding-bottom: 3px;
+
+    &.required:after {
+      content: " *";
+      color: $Rose;
+    }
+  }
+
+  &.invalid {
+    .NewDealFormInputLabel {
+      color: $Rose;
+    }
+
+    input {
+      border-color: $Rose;
+    }
+  }
+
+  &--error-text {
+    color: $Rose;
+    font-size: $BodySmall;
+  }
+}

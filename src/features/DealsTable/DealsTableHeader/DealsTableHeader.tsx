@@ -17,7 +17,10 @@ const DealsTableHeader = (props: DealsTableHeaderProps) => {
 
   return (
     <th className={className} onClick={onSortClick}>
-      {header}{' '}{Boolean(sortDirection) && <SortIcon direction={sortDirection} />}
+      <div className="DealsTableHeader--content">
+        {header}
+        {Boolean(sortDirection) && <SortIcon direction={sortDirection} />}
+      </div>
     </th>
   );
 };

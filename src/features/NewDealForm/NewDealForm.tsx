@@ -3,7 +3,7 @@ import noop from "lodash/noop";
 import NewDealFormInput from "./NewDealFormInput/NewDealFormInput";
 import { DealType, DealFormDirtyType, DealActionType } from "../../types";
 import "./NewDealForm.scss";
-import { isNonEmptyString } from "../../tools/utils";
+import { isNonEmptyString, isValidMonetaryString } from "../../tools/utils";
 
 const DEFAULT_DEAL: DealType = {
   institution: "",
@@ -34,7 +34,7 @@ const DealForm = (props: DealFormProps) => {
     } = deal;
 
     // TODO: properly validate dealSize
-    return isNonEmptyString(institution) && isNonEmptyString(dealType) && isNonEmptyString(dealSize);
+    return isNonEmptyString(institution) && isNonEmptyString(dealType) && isValidMonetaryString(dealSize);
   }, [])
 
   const handleUpdateProperty = (property: string) => (
@@ -103,6 +103,7 @@ const DealForm = (props: DealFormProps) => {
           placeholder='$1,000,000'
           onChange={handleUpdateProperty("dealSize")}
           required
+          validator={isValidMonetaryString}
         />
       </div>
       <button 

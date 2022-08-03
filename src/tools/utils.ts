@@ -1,5 +1,7 @@
 export const isNonEmptyString = (s: string) => Boolean(s.trim());
 
+export const isValidMonetaryString = (s: string) => new RegExp(/^\$?\d{1,3}(,\d{3})*(\.\d{2})?$/g).test(s);
+
 export const stringSorter = (asc: boolean) => (a: string, b: string) => {
   const result = a.localeCompare(b);
   return asc ? result : -result;
@@ -37,5 +39,6 @@ export const stringNumberSorter = (asc: boolean) => (a: string, b: string) => {
 export default {
   booleanSorter,
   isNonEmptyString,
+  isValidMonetaryString,
   stringSorter,
 }

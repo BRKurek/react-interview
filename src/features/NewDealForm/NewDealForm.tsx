@@ -33,7 +33,6 @@ const DealForm = (props: DealFormProps) => {
       dealSize,
     } = deal;
 
-    // TODO: properly validate dealSize
     return isNonEmptyString(institution) && isNonEmptyString(dealType) && isValidMonetaryString(dealSize);
   }, [])
 

@@ -32,8 +32,6 @@ const DealFormInput = (props: DealFormInputProps) => {
 
   const baseValidity = required ? isNonEmptyString(value) && validator(value): validator(value);
   const valid = dirty ? baseValidity : true;
-
-  // TODO: clean up appending classes a bit (maybe bring in classnames)
   const labelClassName = `NewDealFormInputLabel${required ? ' required' : ''}`;
 
   return (

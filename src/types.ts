@@ -1,11 +1,10 @@
-import { SortIconDirection } from "./assets/SortIcon";
-
 export type DealType = {
     id?: number;
     institution: string;
     dealSize: string;
     dealType: string;
     isPublished: boolean
+    [key: string]: string | number | boolean | undefined;
 }
 
 export type DealsListType = {
@@ -18,12 +17,14 @@ export type DealFormDirtyType = {
     dealType: boolean;
 }
 
-export type DealTableSortDirectionsType = {
-    institution?: SortIconDirection;
-    dealSize?: SortIconDirection;
-    dealType?: SortIconDirection;
-    isPublished?: SortIconDirection;
-    [key: string]: SortIconDirection | undefined;
+export type CompareFunctionType = (asc: boolean) => (a: any, b: any) => number;
+
+export type DealTableCompareFunctionsType = {
+    institution: CompareFunctionType;
+    dealSize: CompareFunctionType;
+    dealType: CompareFunctionType;
+    isPublished: CompareFunctionType;
+    [key: string]: CompareFunctionType;
 }
 
 export type DealActionType = (deal: DealType) => any

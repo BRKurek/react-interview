@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { DealActionType, DealTableSortDirectionsType, DealType } from "../../types";
+import { cloneDeep } from "lodash";
+import { DealActionType, DealType, DealTableCompareFunctionsType } from "../../types";
 import DealsTableHeader from "./DealsTableHeader/DealsTableHeader";
 import DealsTableRow from "./DealsTableRow/DealsTableRow";
 import { SortIconDirection } from "../../assets/SortIcon";
+import { booleanSorter, stringNumberSorter, stringSorter } from "../../tools/utils";
 import "./DealsTable.scss";
+
 
 type DealsTableProps = {
   deals: DealType[];
@@ -11,34 +14,56 @@ type DealsTableProps = {
   onPublishDeal: DealActionType;
 };
 
-const DEFAULT_SORT_DIRECTIONS: DealTableSortDirectionsType = {
-  institution: SortIconDirection.UP,
+type DealTableSortState = {
+  property: string;
+  sortDirection: SortIconDirection;
+}
+
+const DEAL_TABLE_COMPARE_FUNCTIONS: DealTableCompareFunctionsType = {
+  institution: stringSorter,
+  dealType: stringSorter,
+  dealSize: stringNumberSorter,
+  isPublished: booleanSorter,
+};
+
+const DEFAULT_DEAL_TABLE_SORT_STATE: DealTableSortState = {
+  property: "institution",
+  sortDirection: SortIconDirection.UP,
 };
 
 const DealsTable = (props: DealsTableProps) => {
   const { deals, onDeleteDeal, onPublishDeal } = props;
-  const [sortDirections, setSortDirections] = useState(DEFAULT_SORT_DIRECTIONS);
+  const [sortState, setSortState] = useState(DEFAULT_DEAL_TABLE_SORT_STATE);
+  const { property, sortDirection } = sortState;
 
   
   const handleSortClick = (property: string) => () => {
-    setSortDirections(prevSortDirections => {
-      const prevSort = prevSortDirections[property];
-      let newSort: SortIconDirection;
+    setSortState(prevSortState => {
+      const { property: prevProperty, sortDirection: prevSortDirection } = prevSortState;
+      let newSortDirection: SortIconDirection;
 
-      if (!prevSort) {
-        newSort = SortIconDirection.UP
+      if (property === prevProperty) {
+        newSortDirection = prevSortDirection === SortIconDirection.UP ? SortIconDirection.DOWN : SortIconDirection.UP;
       } else {
-        newSort = prevSort === SortIconDirection.UP ? SortIconDirection.DOWN : SortIconDirection.UP;
+        newSortDirection = SortIconDirection.UP;
       }
 
-      return { [property]: newSort };
-    })
+      return { property, sortDirection: newSortDirection };
+    });
   };
 
+  const sortedDeals = cloneDeep(deals).sort((dealA, dealB) => {
+    const a = dealA[property];
+    const b = dealB[property];
+    const asc = sortDirection === SortIconDirection.UP;
+    const baseCompareFunc = DEAL_TABLE_COMPARE_FUNCTIONS[property];
+    return baseCompareFunc(asc)(a, b);
+  });
 
-  const dealsTableRows = deals.map((deal) => (
+  const dealsTableRows = sortedDeals.map((deal) => (
     <DealsTableRow key={deal.id} deal={deal} onDelete={onDeleteDeal} onPublish={onPublishDeal} />
   ));
+
   return (
     <div className="tile">
       <div className="tile--header">Deal Portfolio</div>
@@ -48,22 +73,22 @@ const DealsTable = (props: DealsTableProps) => {
             <DealsTableHeader
               header="Institution"
               onSortClick={handleSortClick("institution")}
-              sortDirection={sortDirections.institution} 
+              sortDirection={property === "institution" ? sortDirection : null} 
             />
             <DealsTableHeader
               header="Deal Type"
               onSortClick={handleSortClick("dealType")}
-              sortDirection={sortDirections.dealType} 
+              sortDirection={property === "dealType" ? sortDirection : null} 
             />
             <DealsTableHeader
               header="Deal Size"
               onSortClick={handleSortClick("dealSize")}
-              sortDirection={sortDirections.dealSize} 
+              sortDirection={property === "dealSize" ? sortDirection : null} 
             />
             <DealsTableHeader
               header="Is Published?"
               onSortClick={handleSortClick("isPublished")}
-              sortDirection={sortDirections.isPublished} 
+              sortDirection={property === "isPublished" ? sortDirection : null} 
             />
             <DealsTableHeader />
             <DealsTableHeader />

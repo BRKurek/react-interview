@@ -1,5 +1,4 @@
 import React from "react";
-import { noop } from "lodash";
 
 export enum SortIconDirection {
   UP = "up",
@@ -9,7 +8,7 @@ export enum SortIconDirection {
 type Props = {
   width?: string | number;
   color?: string;
-  direction?: SortIconDirection;
+  direction?: SortIconDirection | null;
 };
 
 const SortIcon = (props: Props) => {

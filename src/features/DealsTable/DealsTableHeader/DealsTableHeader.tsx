@@ -1,5 +1,4 @@
 import React from "react";
-import { noop } from "lodash";
 import SortIcon from "../../../assets/SortIcon";
 import { SortIconDirection } from "../../../assets/SortIcon";
 
@@ -8,7 +7,7 @@ import "./DealsTableHeader.scss";
 type DealsTableHeaderProps = {
   header?: string;
   onSortClick?: (e: React.SyntheticEvent) => void;
-  sortDirection?: SortIconDirection;
+  sortDirection?: SortIconDirection | null;
 };
 
 const DealsTableHeader = (props: DealsTableHeaderProps) => {

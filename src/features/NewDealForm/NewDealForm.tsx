@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import noop from "lodash/noop";
 import NewDealFormInput from "./NewDealFormInput/NewDealFormInput";
 import { DealType, DealFormDirtyType, DealActionType } from "../../types";
@@ -22,19 +22,20 @@ type DealFormProps = {
   onCreateDeal: DealActionType;
 };
 
+const dealFormValid = (deal: DealType) => {
+  const {
+    institution,
+    dealType,
+    dealSize,
+  } = deal;
+
+  return isNonEmptyString(institution) && isNonEmptyString(dealType) && isValidMonetaryString(dealSize);
+}
+
 const DealForm = (props: DealFormProps) => {
   const { onCreateDeal = noop } = props;
   const [newDeal, setNewDeal] = useState(DEFAULT_DEAL);
   const [dirtyStates, setDirtyStates] = useState(DEFAULT_DIRTY_STATES);
-  const dealFormValid = useCallback((deal: DealType) => {
-    const {
-      institution,
-      dealType,
-      dealSize,
-    } = deal;
-
-    return isNonEmptyString(institution) && isNonEmptyString(dealType) && isValidMonetaryString(dealSize);
-  }, [])
 
   const handleUpdateProperty = (property: string) => (
     e: React.ChangeEvent<any>
@@ -65,6 +66,8 @@ const DealForm = (props: DealFormProps) => {
       // Reset state for the next deal input.
       setNewDeal({ ...DEFAULT_DEAL });
       setDirtyStates({ ...DEFAULT_DIRTY_STATES });
+    } else {
+      // potentially alert the user in some way that some form field(s) is invalid
     }
   };
 
